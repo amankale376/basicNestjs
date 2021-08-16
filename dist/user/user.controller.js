@@ -18,6 +18,8 @@ const login_dto_1 = require("./dto/login.dto");
 const signup_dto_1 = require("./dto/signup.dto");
 const token_decorator_1 = require("./token.decorator");
 const user_service_1 = require("./user.service");
+const query_dto_1 = require("./dto/query.dto");
+const swagger_1 = require("@nestjs/swagger");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -31,14 +33,17 @@ let UserController = class UserController {
     deleteUser(token) {
         return this.userService.deleteUser(token);
     }
-    listUsers(token) {
-        return this.userService.listUsers(token);
+    listUsers(token, query) {
+        return this.userService.listUsers(token, query);
     }
     getUser(token) {
         return this.userService.getUser(token);
     }
 };
 __decorate([
+    swagger_1.ApiOkResponse({ description: 'User Login' }),
+    swagger_1.ApiUnauthorizedResponse({ description: 'Invalid Credentials' }),
+    swagger_1.ApiBody({ type: login_dto_1.LoginDto }),
     common_1.Post('login'),
     __param(0, common_1.Body()),
     __metadata("design:type", Function),
@@ -46,6 +51,8 @@ __decorate([
     __metadata("design:returntype", Object)
 ], UserController.prototype, "login", null);
 __decorate([
+    swagger_1.ApiBody({ type: signup_dto_1.SignupDto }),
+    swagger_1.ApiCreatedResponse({ description: 'User registeration' }),
     common_1.Post('signup'),
     __param(0, common_1.Body()),
     __metadata("design:type", Function),
@@ -53,6 +60,8 @@ __decorate([
     __metadata("design:returntype", Object)
 ], UserController.prototype, "signup", null);
 __decorate([
+    swagger_1.ApiBearerAuth(),
+    swagger_1.ApiOkResponse({ description: 'User deletion' }),
     common_1.Delete('deleteUser'),
     __param(0, token_decorator_1.Token()),
     __metadata("design:type", Function),
@@ -60,13 +69,18 @@ __decorate([
     __metadata("design:returntype", Object)
 ], UserController.prototype, "deleteUser", null);
 __decorate([
+    swagger_1.ApiBearerAuth(),
+    swagger_1.ApiOkResponse({ description: 'Listing Users' }),
     common_1.Get('users'),
     __param(0, token_decorator_1.Token()),
+    __param(1, common_1.Query()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, query_dto_1.QueryDto]),
     __metadata("design:returntype", Object)
 ], UserController.prototype, "listUsers", null);
 __decorate([
+    swagger_1.ApiBearerAuth(),
+    swagger_1.ApiOkResponse({ description: 'User information' }),
     common_1.Get('user'),
     __param(0, token_decorator_1.Token()),
     __metadata("design:type", Function),

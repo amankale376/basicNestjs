@@ -18,7 +18,7 @@ export declare class UserService {
         id: string;
         message: string;
     }>;
-    listUsers(Token: any): Promise<UserDocument[]>;
+    listUsers(Token: any, query: any): Promise<UserDocument[]>;
     getUser(Token: any): Promise<{
         user: UserDocument;
     }>;

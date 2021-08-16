@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
+require('dotenv').config();
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
@@ -20,7 +21,6 @@ const user_model_1 = require("./user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const shortid = require("shortid");
-require('dotenv').config();
 let UserService = class UserService {
     constructor(userModel) {
         this.userModel = userModel;
@@ -50,7 +50,7 @@ let UserService = class UserService {
         try {
             const check = await this.checkDuplicate(body);
             if (check) {
-                throw new common_1.ForbiddenException("Duplicate Email");
+                throw new common_1.ForbiddenException("username is not Available");
             }
             const newUser = new this.userModel({
                 name: body.name,
@@ -90,11 +90,14 @@ let UserService = class UserService {
             throw new common_1.NotFoundException("user not found");
         }
     }
-    async listUsers(Token) {
+    async listUsers(Token, query) {
         const match = await this.getMatch(Token);
         if (match) {
+            const page = parseInt(query.page) || 1;
+            const limit = parseInt(query.limit) || 5;
+            const skip = (page - 1) * limit;
             try {
-                const users = await this.userModel.find({}, ' name , username , email , employeeID , -_id ');
+                const users = await this.userModel.find({}, ' name , username , email , employeeID , -_id ').skip(skip).limit(limit);
                 if (users.length === 0) {
                     throw new common_1.NotFoundException("user not found");
                 }
@@ -135,7 +138,7 @@ let UserService = class UserService {
         }
     }
     async checkDuplicate(body) {
-        const match = await this.userModel.findOne({ email: body.email });
+        const match = await this.userModel.findOne({ username: body.username });
         return match;
     }
     generateToken(_id) {

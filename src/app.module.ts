@@ -3,7 +3,7 @@ import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/c
 import { Auth } from './common/middleware/auth.middleware';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
-import { UserController } from './user/user.controller';
+
 
 
 @Module({

@@ -8,8 +8,6 @@ import { User, UserDocument } from './user.model';
 import * as bcrypt from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
 import * as shortid from 'shortid'
-import mongoose from 'mongoose'
-import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class UserService {
@@ -42,7 +40,7 @@ export class UserService {
     try {
         const check = await this.checkDuplicate(body)
         if(check){
-            throw new ForbiddenException("Duplicate Email")
+            throw new ForbiddenException("username is not Available")
         }
         const newUser = new this.userModel({
             name:body.name,
@@ -83,11 +81,14 @@ export class UserService {
 
         }
         
-        async listUsers(Token){
+        async listUsers(Token , query){
             const match = await this.getMatch(Token)
             if(match){
+                const page = parseInt(query.page) || 1
+                const limit = parseInt(query.limit) || 5
+                const skip = (page-1)*limit
                 try {
-                    const users = await this.userModel.find({}, ' name , username , email , employeeID , -_id ')
+                    const users = await this.userModel.find({}, ' name , username , email , employeeID , -_id ').skip(skip).limit(limit)
                     if(users.length === 0 ){
                         throw new NotFoundException("user not found")
                     
@@ -130,7 +131,7 @@ export class UserService {
         }
 
         private async checkDuplicate(body){
-            const match = await this.userModel.findOne({email:body.email}) 
+            const match = await this.userModel.findOne({username:body.username}) 
             return match
         }
 
