@@ -6,7 +6,7 @@ const common_1 = require("@nestjs/common");
 const jwt = require("jsonwebtoken");
 exports.Token = common_1.createParamDecorator((data, ctx) => {
     const request = ctx.switchToHttp().getRequest();
-    const token = request.header('Authorization');
+    const token = request.header('Authorization').replace('Bearer ', '');
     try {
         const decoded = jwt.verify(token, process.env.SECRET);
         return request.token = decoded;

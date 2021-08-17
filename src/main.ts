@@ -3,11 +3,10 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const options = new DocumentBuilder().setTitle('basic Nest API')
+  const options = new DocumentBuilder()
+  .setTitle('basic Nest API')
   .setDescription('Basic NestJS API')
-  .addBearerAuth({
-    type:'http', scheme:'bearer', bearerFormat:'Token'
-  },'access-Token')
+  .addBearerAuth()
   .setVersion('1.0.0')
   .build()
   const document = SwaggerModule.createDocument(app, options)

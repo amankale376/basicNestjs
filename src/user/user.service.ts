@@ -84,8 +84,8 @@ export class UserService {
         async listUsers(Token , query){
             const match = await this.getMatch(Token)
             if(match){
-                const page = parseInt(query.page) || 1
-                const limit = parseInt(query.limit) || 5
+                const page = query.page || 1
+                const limit = query.limit || 5
                 const skip = (page-1)*limit
                 try {
                     const users = await this.userModel.find({}, ' name , username , email , employeeID , -_id ').skip(skip).limit(limit)

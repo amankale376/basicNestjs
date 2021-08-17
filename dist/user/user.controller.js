@@ -69,11 +69,12 @@ __decorate([
     __metadata("design:returntype", Object)
 ], UserController.prototype, "deleteUser", null);
 __decorate([
+    common_1.Post('users'),
     swagger_1.ApiBearerAuth(),
     swagger_1.ApiOkResponse({ description: 'Listing Users' }),
-    common_1.Get('users'),
+    swagger_1.ApiBody({ type: query_dto_1.QueryDto }),
     __param(0, token_decorator_1.Token()),
-    __param(1, common_1.Query()),
+    __param(1, common_1.Body()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, query_dto_1.QueryDto]),
     __metadata("design:returntype", Object)

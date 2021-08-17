@@ -5,7 +5,7 @@ import * as jwt from 'jsonwebtoken'
 export const Token = createParamDecorator(
     (data:unknown, ctx: ExecutionContext)=>{
         const request = ctx.switchToHttp().getRequest()
-        const token =  request.header('Authorization')
+        const token =  request.header('Authorization').replace('Bearer ', '')
         try {
             const decoded = jwt.verify(token, process.env.SECRET)
             return request.token = decoded

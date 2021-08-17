@@ -4,7 +4,7 @@ import { SignupDto } from './dto/signup.dto';
 import { Token } from './token.decorator';
 import { UserService } from './user.service';
 import { QueryDto } from './dto/query.dto';
-import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiUnauthorizedResponse } from '@nestjs/swagger'
 @Controller('/')
 export class UserController {
 constructor(private readonly userService : UserService){}
@@ -29,11 +29,11 @@ return this.userService.signup(user)
 deleteUser(@Token() token ):any{
 return this.userService.deleteUser(token)
 }
-
+@Post('users')
 @ApiBearerAuth()
 @ApiOkResponse({description:'Listing Users'})
-@Get('users')
-listUsers(@Token() token , @Query() query:QueryDto):any{
+@ApiBody({type:QueryDto})
+listUsers(@Token() token , @Body() query:QueryDto):any{
 return this.userService.listUsers(token, query)
 }
 
