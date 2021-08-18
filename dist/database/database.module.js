@@ -6,25 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
-require('dotenv').config();
+exports.DatabaseModule = void 0;
 const common_1 = require("@nestjs/common");
-const auth_middleware_1 = require("./common/middleware/auth.middleware");
-const user_module_1 = require("./user/user.module");
-let AppModule = class AppModule {
-    configure(consumer) {
-        consumer.apply(auth_middleware_1.Auth)
-            .forRoutes({ path: '/signup', method: common_1.RequestMethod.POST });
-    }
+const databse_providers_1 = require("./databse.providers");
+let DatabaseModule = class DatabaseModule {
 };
-AppModule = __decorate([
+DatabaseModule = __decorate([
     common_1.Module({
-        imports: [
-            user_module_1.UserModule
-        ],
-        controllers: [],
-        providers: [],
+        providers: [...databse_providers_1.databaseProviders],
+        exports: [...databse_providers_1.databaseProviders]
     })
-], AppModule);
-exports.AppModule = AppModule;
-//# sourceMappingURL=app.module.js.map
+], DatabaseModule);
+exports.DatabaseModule = DatabaseModule;
+//# sourceMappingURL=database.module.js.map

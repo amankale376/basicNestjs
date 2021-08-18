@@ -1,10 +1,10 @@
-import { Model } from 'mongoose';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
-import { UserDocument } from './user.model';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
 export declare class UserService {
     private userModel;
-    constructor(userModel: Model<UserDocument>);
+    constructor(userModel: Repository<User>);
     login(body: LoginDto): Promise<{
         message: string;
         token: string;
@@ -18,9 +18,9 @@ export declare class UserService {
         id: string;
         message: string;
     }>;
-    listUsers(Token: any, query: any): Promise<UserDocument[]>;
+    listUsers(Token: any, query: any): Promise<User[]>;
     getUser(Token: any): Promise<{
-        user: UserDocument;
+        user: User;
     }>;
     private getMatch;
     private checkDuplicate;

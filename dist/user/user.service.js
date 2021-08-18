@@ -15,19 +15,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 require('dotenv').config();
 const common_1 = require("@nestjs/common");
-const mongoose_1 = require("@nestjs/mongoose");
-const mongoose_2 = require("mongoose");
-const user_model_1 = require("./user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const shortid = require("shortid");
+const typeorm_1 = require("typeorm");
+const user_entity_1 = require("./user.entity");
 let UserService = class UserService {
     constructor(userModel) {
         this.userModel = userModel;
     }
     async login(body) {
         try {
-            const user = await this.userModel.findOne({ username: body.username });
+            const user = await this.userModel.findOne({ where: { username: body.username } });
             if (!user) {
                 throw new common_1.NotFoundException('User not found!');
             }
@@ -35,8 +34,7 @@ let UserService = class UserService {
             if (!isMatch) {
                 throw new common_1.ForbiddenException('Authorization failed');
             }
-            const token = this.generateToken(user._id);
-            await user.save();
+            const token = this.generateToken(user.id);
             return {
                 message: 'Login Success',
                 token: token
@@ -52,14 +50,13 @@ let UserService = class UserService {
             if (check) {
                 throw new common_1.ForbiddenException("username is not Available");
             }
-            const newUser = new this.userModel({
-                name: body.name,
-                username: body.username,
-                email: body.email,
-                password: body.password,
-                employeeID: shortid.generate()
-            });
-            const user = await newUser.save();
+            const newuser = new user_entity_1.User();
+            newuser.name = body.name;
+            newuser.username = body.username;
+            newuser.email = body.email;
+            newuser.password = body.password;
+            newuser.employeeID = shortid.generate();
+            const user = await this.userModel.save(newuser);
             return {
                 username: user.username,
                 email: user.email,
@@ -74,7 +71,7 @@ let UserService = class UserService {
         const match = await this.getMatch(Token);
         if (match) {
             try {
-                const deleteUser = await this.userModel.deleteOne({ _id: Token._id });
+                const deleteUser = await this.userModel.delete({ id: Token.id });
                 if (deleteUser) {
                     return {
                         id: match.employeeID,
@@ -97,7 +94,7 @@ let UserService = class UserService {
             const limit = query.limit || 5;
             const skip = (page - 1) * limit;
             try {
-                const users = await this.userModel.find({}, ' name , username , email , employeeID , -_id ').skip(skip).limit(limit);
+                const users = await this.userModel.find({ select: ['name', 'username', 'email', 'employeeID'], order: { id: 'ASC' }, skip: skip, take: limit });
                 if (users.length === 0) {
                     throw new common_1.NotFoundException("user not found");
                 }
@@ -114,7 +111,7 @@ let UserService = class UserService {
         const match = await this.getMatch(Token);
         if (match) {
             try {
-                const user = await this.userModel.findOne({ _id: Token._id }, ' name , username , email , employeeID, -_id ');
+                const user = await this.userModel.findOne({ where: { id: Token.id }, select: ['name', 'username', 'email', 'employeeID'] });
                 if (user) {
                     return {
                         user: user
@@ -131,24 +128,24 @@ let UserService = class UserService {
     }
     async getMatch(Token) {
         try {
-            const match = await this.userModel.findOne({ _id: Token._id });
+            const match = await this.userModel.findOne({ where: { id: Token.id } });
             return match;
         }
         catch (error) {
         }
     }
     async checkDuplicate(body) {
-        const match = await this.userModel.findOne({ username: body.username });
+        const match = await this.userModel.findOne({ where: { username: body.username } });
         return match;
     }
-    generateToken(_id) {
-        return jwt.sign({ _id: _id }, process.env.SECRET, { expiresIn: "1hr" });
+    generateToken(id) {
+        return jwt.sign({ id: id }, process.env.SECRET, { expiresIn: "1hr" });
     }
 };
 UserService = __decorate([
     common_1.Injectable(),
-    __param(0, mongoose_1.InjectModel(user_model_1.User.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __param(0, common_1.Inject('USER_REPOSITORY')),
+    __metadata("design:paramtypes", [typeorm_1.Repository])
 ], UserService);
 exports.UserService = UserService;
 //# sourceMappingURL=user.service.js.map

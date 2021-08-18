@@ -1,13 +1,13 @@
 require('dotenv').config()
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { Auth } from './common/middleware/auth.middleware';
-import { MongooseModule } from '@nestjs/mongoose';
+// import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 
-
+// MongooseModule.forRoot(process.env.MONGOOSE_CONNECT),
 
 @Module({
-  imports: [ MongooseModule.forRoot(process.env.MONGOOSE_CONNECT),
+  imports: [ 
    UserModule],
   controllers: [],
   providers: [],
