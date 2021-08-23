@@ -5,9 +5,10 @@ import { UserController } from './user.controller';
 import { UserService , } from './user.service';
 import { userProviders } from './user.providers'; 
 import { DatabaseModule } from '../database/database.module';
+import { UserGateway } from './user.gateway';
 @Module({
   imports:[DatabaseModule],
   controllers: [UserController],
-  providers: [...userProviders,UserService]
+  providers: [...userProviders,UserService,UserGateway]
 })
 export class UserModule {}

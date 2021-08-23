@@ -32,6 +32,8 @@ constructor(
                 throw new ForbiddenException('Authorization failed')
             }
            const token = this.generateToken(user.id)
+
+           await this.userModel.save(user)
             return {
                 message:'Login Success',
                 token:token
@@ -54,6 +56,7 @@ constructor(
         newuser.email = body.email
         newuser.password = body.password
         newuser.employeeID = shortid.generate()
+       
         const user = await this.userModel.save(newuser)
         return {
             username:user.username,
@@ -120,6 +123,32 @@ constructor(
                     throw new BadRequestException(error)
                 }
                 
+            }else{
+                throw new UnauthorizedException("Authentication Failed")
+            }
+        }
+
+        async getUserById(Token, id){
+            const match = await this.getMatch(Token)
+            if(match){
+                try {
+                    const user = await this.userModel.findOne({where:{id:id}}) 
+                    if(user.id !== match.id){
+                        const viewers = JSON.parse(user.viewers)
+                        user.viewers = JSON.stringify([...viewers,{employeeID:match.employeeID, username:match.username, email:match.email}])
+                        await this.userModel.save(user)
+                    }
+                    if(user){
+                        return {
+                            name:user.name,
+                            email:user.email,
+                            emmployeeID:user.name,
+                            username:user.username
+                        }
+                    }
+                } catch (error) {
+                    throw new BadRequestException(error)
+                }
             }else{
                 throw new UnauthorizedException("Authentication Failed")
             }

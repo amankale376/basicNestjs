@@ -12,13 +12,14 @@ const user_controller_1 = require("./user.controller");
 const user_service_1 = require("./user.service");
 const user_providers_1 = require("./user.providers");
 const database_module_1 = require("../database/database.module");
+const user_gateway_1 = require("./user.gateway");
 let UserModule = class UserModule {
 };
 UserModule = __decorate([
     common_1.Module({
         imports: [database_module_1.DatabaseModule],
         controllers: [user_controller_1.UserController],
-        providers: [...user_providers_1.userProviders, user_service_1.UserService]
+        providers: [...user_providers_1.userProviders, user_service_1.UserService, user_gateway_1.UserGateway]
     })
 ], UserModule);
 exports.UserModule = UserModule;

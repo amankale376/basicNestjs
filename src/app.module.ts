@@ -3,6 +3,9 @@ import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/c
 import { Auth } from './common/middleware/auth.middleware';
 // import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
+import { UserGateway } from './user/user.gateway';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 // MongooseModule.forRoot(process.env.MONGOOSE_CONNECT),
 

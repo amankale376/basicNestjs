@@ -9,5 +9,9 @@ export declare class UserController {
     signup(user: SignupDto): any;
     deleteUser(token: any): any;
     listUsers(token: any, query: QueryDto): any;
+    getFeed(param: any): {
+        param: any;
+    };
     getUser(token: any): any;
+    getUserById(Token: any, id: string): any;
 }

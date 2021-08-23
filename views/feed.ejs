@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Websockets Client</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body> 
+
+    <div id='v-app'>
+        <h1>{{title}}</h1>
+    <p>
+        <ul>
+            <li v-for="msg of messages">{{msg}}</li>
+        </ul>
+    </p>
+    
+</div>
+    <script>
+        var app = new Vue({
+            el:'#v-app',
+            data:{
+                title:'List of Viewers',
+                messages:[],
+                socket:null
+            },
+            methods:{
+            },
+            created(){
+                this.socket = io("http://localhost:3000")
+                this.socket.emit('user', '<%= param %>')
+                this.socket.on('message',(msg)=>{
+                  this.messages = msg
+                })
+            }
+        })
+    </script>
+</body>
+</html>

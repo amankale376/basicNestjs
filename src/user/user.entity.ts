@@ -1,3 +1,4 @@
+
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -19,4 +20,11 @@ export class User{
 
     @Column()
     employeeID:string;
+
+    @Column()
+    status:string;
+
+    @Column()
+    viewers:string;
+
 }

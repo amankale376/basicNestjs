@@ -36,8 +36,14 @@ let UserController = class UserController {
     listUsers(token, query) {
         return this.userService.listUsers(token, query);
     }
+    getFeed(param) {
+        return { param };
+    }
     getUser(token) {
         return this.userService.getUser(token);
+    }
+    getUserById(Token, id) {
+        return this.userService.getUserById(Token, id);
     }
 };
 __decorate([
@@ -80,6 +86,14 @@ __decorate([
     __metadata("design:returntype", Object)
 ], UserController.prototype, "listUsers", null);
 __decorate([
+    common_1.Get('feed/:id'),
+    common_1.Render('feed'),
+    __param(0, common_1.Param('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "getFeed", null);
+__decorate([
     swagger_1.ApiBearerAuth(),
     swagger_1.ApiOkResponse({ description: 'User information' }),
     common_1.Get('user'),
@@ -88,6 +102,17 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Object)
 ], UserController.prototype, "getUser", null);
+__decorate([
+    swagger_1.ApiBearerAuth(),
+    swagger_1.ApiOkResponse({ description: 'get Particular User by Id ' }),
+    swagger_1.ApiParam({ name: 'Param', type: 'String' }),
+    common_1.Get('user/:Param'),
+    __param(0, token_decorator_1.Token()),
+    __param(1, common_1.Param('Param')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Object)
+], UserController.prototype, "getUserById", null);
 UserController = __decorate([
     common_1.Controller('/'),
     __metadata("design:paramtypes", [user_service_1.UserService])

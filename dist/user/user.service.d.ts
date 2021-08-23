@@ -22,6 +22,12 @@ export declare class UserService {
     getUser(Token: any): Promise<{
         user: User;
     }>;
+    getUserById(Token: any, id: any): Promise<{
+        name: string;
+        email: string;
+        emmployeeID: string;
+        username: string;
+    }>;
     private getMatch;
     private checkDuplicate;
     private generateToken;

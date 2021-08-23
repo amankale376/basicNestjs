@@ -35,6 +35,7 @@ let UserService = class UserService {
                 throw new common_1.ForbiddenException('Authorization failed');
             }
             const token = this.generateToken(user.id);
+            await this.userModel.save(user);
             return {
                 message: 'Login Success',
                 token: token
@@ -115,6 +116,33 @@ let UserService = class UserService {
                 if (user) {
                     return {
                         user: user
+                    };
+                }
+            }
+            catch (error) {
+                throw new common_1.BadRequestException(error);
+            }
+        }
+        else {
+            throw new common_1.UnauthorizedException("Authentication Failed");
+        }
+    }
+    async getUserById(Token, id) {
+        const match = await this.getMatch(Token);
+        if (match) {
+            try {
+                const user = await this.userModel.findOne({ where: { id: id } });
+                if (user.id !== match.id) {
+                    const viewers = JSON.parse(user.viewers);
+                    user.viewers = JSON.stringify([...viewers, { employeeID: match.employeeID, username: match.username, email: match.email }]);
+                    await this.userModel.save(user);
+                }
+                if (user) {
+                    return {
+                        name: user.name,
+                        email: user.email,
+                        emmployeeID: user.name,
+                        username: user.username
                     };
                 }
             }

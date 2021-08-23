@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Delete, Get, Query } from '@nestjs/common'
+import { Controller, Post, Body, Delete, Get, Query, Render, Param } from '@nestjs/common'
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
 import { Token } from './token.decorator';
@@ -37,10 +37,25 @@ listUsers(@Token() token , @Body() query:QueryDto):any{
 return this.userService.listUsers(token, query)
 }
 
+@Get('feed/:id')
+@Render('feed')
+getFeed(@Param('id') param){
+      return {param};
+}
+
 @ApiBearerAuth()
 @ApiOkResponse({description:'User information'})
 @Get('user')
 getUser(@Token() token):any{
       return this.userService.getUser(token)
 }
+
+@ApiBearerAuth()
+@ApiOkResponse({description:'get Particular User by Id '})
+@ApiParam({name:'Param' ,type:'String'})
+@Get('user/:Param')
+getUserById(@Token() Token , @Param('Param') id:string):any{
+      return this.userService.getUserById(Token , id )
+}
+
 }
