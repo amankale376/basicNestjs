@@ -4,7 +4,9 @@ export declare class User {
     username: string;
     email: string;
     password: string;
-    employeeID: string;
-    status: string;
-    viewers: string;
+}
+export declare class Sockets {
+    id: number;
+    userId: number;
+    ClientId: string;
 }

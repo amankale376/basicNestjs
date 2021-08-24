@@ -12,6 +12,7 @@ exports.databaseProviders = [
             username: 'root',
             password: 'password',
             database: 'nestjsusers',
+            synchronize: true,
             entities: [
                 __dirname + '/../**/*.entity{.ts,.js}',
             ]

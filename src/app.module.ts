@@ -1,17 +1,23 @@
 require('dotenv').config()
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Auth } from './common/middleware/auth.middleware';
-// import { MongooseModule } from '@nestjs/mongoose';
+
 import { UserModule } from './user/user.module';
-import { UserGateway } from './user/user.gateway';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 
-// MongooseModule.forRoot(process.env.MONGOOSE_CONNECT),
-
+ import { join } from 'path';
+import { WebSocketModule } from './web-socket/web-socket.module';
 @Module({
-  imports: [ 
-   UserModule],
+  imports: [ TypeOrmModule.forRoot({  
+  type:'mysql',
+  host:'localhost',
+  port:3306,
+  username:'root',
+  password:'password',
+  database:'nestjsusers',
+  synchronize:true,
+  entities: [  join(__dirname,'**','*.entity{.ts,.js}')]}),
+   UserModule, WebSocketModule],
   controllers: [],
   providers: [],
 })

@@ -7,23 +7,26 @@ import { SignupDto } from './dto/signup.dto';
 // import { User, UserDocument } from './user.model';
 import * as bcrypt from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
-import * as shortid from 'shortid'
 import { Repository } from 'typeorm';
-import { User } from './user.entity';
-
+import { User, Sockets } from './user.entity';
+import { WebSocketsGateway } from 'src/web-socket/web-socket.gateway';
+import {InjectRepository} from '@nestjs/typeorm'
 @Injectable()
 export class UserService {
     
 //    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 constructor(
-    @Inject('USER_REPOSITORY')
-    private userModel: Repository<User>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(Sockets)
+     private socketsRepository: Repository<Sockets>,
+    private readonly webSocketGateway: WebSocketsGateway
   ) {}
 
     
     async login(body:LoginDto){
         try {
-            const user = await this.userModel.findOne({where:{username:body.username}})
+            const user = await this.userRepository.findOne({where:{username:body.username}})
             if(!user){
                 throw new NotFoundException('User not found!')
             }
@@ -33,7 +36,7 @@ constructor(
             }
            const token = this.generateToken(user.id)
 
-           await this.userModel.save(user)
+           await this.userRepository.save(user)
             return {
                 message:'Login Success',
                 token:token
@@ -55,9 +58,8 @@ constructor(
         newuser.username = body.username
         newuser.email = body.email
         newuser.password = body.password
-        newuser.employeeID = shortid.generate()
        
-        const user = await this.userModel.save(newuser)
+        const user = await this.userRepository.save(newuser)
         return {
             username:user.username,
             email:user.email,
@@ -72,11 +74,11 @@ constructor(
             const match = await this.getMatch(Token)
             if(match){
                 try {
-                    const deleteUser =  await this.userModel.delete({id:Token.id})
+                    const deleteUser =  await this.userRepository.delete({id:Token.id})
                     if(deleteUser){
                         return {
-                            id:match.employeeID,
-                            message:"user with this employeeID is deleted"
+                            id:match.id,
+                            message:"user with this id is deleted"
                         }
                     }
                 } catch (error) {
@@ -95,7 +97,7 @@ constructor(
                 const limit = query.limit || 5
                 const skip = (page-1)*limit
                 try {
-                    const users = await this.userModel.find({select:['name' , 'username' , 'email' , 'employeeID'] ,order:{ id:'ASC'}, skip:skip , take:limit})
+                    const users = await this.userRepository.find({select:['name' , 'username' , 'email'] ,order:{ id:'ASC'}, skip:skip , take:limit})
                     if(users.length === 0 ){
                         throw new NotFoundException("user not found")
                     
@@ -113,7 +115,7 @@ constructor(
             const match = await this.getMatch(Token)
             if(match){
                 try {
-                    const user = await this.userModel.findOne({where:{id:Token.id}, select:['name' , 'username' , 'email' , 'employeeID']})    
+                    const user = await this.userRepository.findOne({where:{id:Token.id}, select:['name' , 'username' , 'email']})    
                     if(user){
                         return {
                             user:user
@@ -132,20 +134,14 @@ constructor(
             const match = await this.getMatch(Token)
             if(match){
                 try {
-                    const user = await this.userModel.findOne({where:{id:id}}) 
-                    if(user.id !== match.id){
-                        const viewers = JSON.parse(user.viewers)
-                        user.viewers = JSON.stringify([...viewers,{employeeID:match.employeeID, username:match.username, email:match.email}])
-                        await this.userModel.save(user)
+                    const user = await this.socketsRepository.findOne({where:{userId:id}})
+                    if(user.ClientId){
+                        this.webSocketGateway.wss.emit('message', match.name+" view your details")
+                        
                     }
-                    if(user){
-                        return {
-                            name:user.name,
-                            email:user.email,
-                            emmployeeID:user.name,
-                            username:user.username
-                        }
-                    }
+                    return {
+                        message:'View Your details'
+                       } 
                 } catch (error) {
                     throw new BadRequestException(error)
                 }
@@ -156,7 +152,7 @@ constructor(
 
         private async getMatch(Token){
               try {
-                const match = await this.userModel.findOne({where:{id:Token.id}})
+                const match = await this.userRepository.findOne({where:{id:Token.id}})
                 return match  
               } catch (error) {
                  
@@ -164,7 +160,7 @@ constructor(
         }
 
         private async checkDuplicate(body){
-            const match = await this.userModel.findOne({where:{username:body.username}}) 
+            const match = await this.userRepository.findOne({where:{username:body.username}}) 
             return match
         }
 

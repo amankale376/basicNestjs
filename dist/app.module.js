@@ -9,8 +9,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 require('dotenv').config();
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
 const auth_middleware_1 = require("./common/middleware/auth.middleware");
 const user_module_1 = require("./user/user.module");
+const path_1 = require("path");
+const web_socket_module_1 = require("./web-socket/web-socket.module");
+console.log(path_1.join(__dirname, '**', '*.entity{.ts,.js}'));
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.Auth)
@@ -19,9 +23,17 @@ let AppModule = class AppModule {
 };
 AppModule = __decorate([
     common_1.Module({
-        imports: [
-            user_module_1.UserModule
-        ],
+        imports: [typeorm_1.TypeOrmModule.forRoot({
+                type: 'mysql',
+                host: 'localhost',
+                port: 3306,
+                username: 'root',
+                password: 'password',
+                database: 'nestjsusers',
+                synchronize: true,
+                entities: [path_1.join(__dirname, '**', '*.entity{.ts,.js}')]
+            }),
+            user_module_1.UserModule, web_socket_module_1.WebSocketModule],
         controllers: [],
         providers: [],
     })

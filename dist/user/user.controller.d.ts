@@ -13,5 +13,5 @@ export declare class UserController {
         param: any;
     };
     getUser(token: any): any;
-    getUserById(Token: any, id: string): any;
+    getUserById(Token: any, id: number): any;
 }

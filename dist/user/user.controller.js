@@ -105,12 +105,12 @@ __decorate([
 __decorate([
     swagger_1.ApiBearerAuth(),
     swagger_1.ApiOkResponse({ description: 'get Particular User by Id ' }),
-    swagger_1.ApiParam({ name: 'Param', type: 'String' }),
-    common_1.Get('user/:Param'),
+    common_1.Get('user/:id'),
+    swagger_1.ApiParam({ name: 'id', type: 'number' }),
     __param(0, token_decorator_1.Token()),
-    __param(1, common_1.Param('Param')),
+    __param(1, common_1.Param('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Object)
 ], UserController.prototype, "getUserById", null);
 UserController = __decorate([

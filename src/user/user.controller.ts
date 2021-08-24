@@ -52,10 +52,10 @@ getUser(@Token() token):any{
 
 @ApiBearerAuth()
 @ApiOkResponse({description:'get Particular User by Id '})
-@ApiParam({name:'Param' ,type:'String'})
-@Get('user/:Param')
-getUserById(@Token() Token , @Param('Param') id:string):any{
-      return this.userService.getUserById(Token , id )
+@Get('user/:id')
+@ApiParam({name:'id', type:'number'})
+getUserById(@Token() Token ,  @Param('id') id:number ):any{
+      return this.userService.getUserById(Token, id)
 }
 
 }

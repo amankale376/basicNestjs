@@ -17,16 +17,19 @@ require('dotenv').config();
 const common_1 = require("@nestjs/common");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const shortid = require("shortid");
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
+const web_socket_gateway_1 = require("../web-socket/web-socket.gateway");
+const typeorm_2 = require("@nestjs/typeorm");
 let UserService = class UserService {
-    constructor(userModel) {
-        this.userModel = userModel;
+    constructor(userRepository, socketsRepository, webSocketGateway) {
+        this.userRepository = userRepository;
+        this.socketsRepository = socketsRepository;
+        this.webSocketGateway = webSocketGateway;
     }
     async login(body) {
         try {
-            const user = await this.userModel.findOne({ where: { username: body.username } });
+            const user = await this.userRepository.findOne({ where: { username: body.username } });
             if (!user) {
                 throw new common_1.NotFoundException('User not found!');
             }
@@ -35,7 +38,7 @@ let UserService = class UserService {
                 throw new common_1.ForbiddenException('Authorization failed');
             }
             const token = this.generateToken(user.id);
-            await this.userModel.save(user);
+            await this.userRepository.save(user);
             return {
                 message: 'Login Success',
                 token: token
@@ -56,8 +59,7 @@ let UserService = class UserService {
             newuser.username = body.username;
             newuser.email = body.email;
             newuser.password = body.password;
-            newuser.employeeID = shortid.generate();
-            const user = await this.userModel.save(newuser);
+            const user = await this.userRepository.save(newuser);
             return {
                 username: user.username,
                 email: user.email,
@@ -72,11 +74,11 @@ let UserService = class UserService {
         const match = await this.getMatch(Token);
         if (match) {
             try {
-                const deleteUser = await this.userModel.delete({ id: Token.id });
+                const deleteUser = await this.userRepository.delete({ id: Token.id });
                 if (deleteUser) {
                     return {
-                        id: match.employeeID,
-                        message: "user with this employeeID is deleted"
+                        id: match.id,
+                        message: "user with this id is deleted"
                     };
                 }
             }
@@ -95,7 +97,7 @@ let UserService = class UserService {
             const limit = query.limit || 5;
             const skip = (page - 1) * limit;
             try {
-                const users = await this.userModel.find({ select: ['name', 'username', 'email', 'employeeID'], order: { id: 'ASC' }, skip: skip, take: limit });
+                const users = await this.userRepository.find({ select: ['name', 'username', 'email'], order: { id: 'ASC' }, skip: skip, take: limit });
                 if (users.length === 0) {
                     throw new common_1.NotFoundException("user not found");
                 }
@@ -112,7 +114,7 @@ let UserService = class UserService {
         const match = await this.getMatch(Token);
         if (match) {
             try {
-                const user = await this.userModel.findOne({ where: { id: Token.id }, select: ['name', 'username', 'email', 'employeeID'] });
+                const user = await this.userRepository.findOne({ where: { id: Token.id }, select: ['name', 'username', 'email'] });
                 if (user) {
                     return {
                         user: user
@@ -131,20 +133,13 @@ let UserService = class UserService {
         const match = await this.getMatch(Token);
         if (match) {
             try {
-                const user = await this.userModel.findOne({ where: { id: id } });
-                if (user.id !== match.id) {
-                    const viewers = JSON.parse(user.viewers);
-                    user.viewers = JSON.stringify([...viewers, { employeeID: match.employeeID, username: match.username, email: match.email }]);
-                    await this.userModel.save(user);
+                const user = await this.socketsRepository.findOne({ where: { userId: id } });
+                if (user.ClientId) {
+                    this.webSocketGateway.wss.emit('message', match.name + " view your details");
                 }
-                if (user) {
-                    return {
-                        name: user.name,
-                        email: user.email,
-                        emmployeeID: user.name,
-                        username: user.username
-                    };
-                }
+                return {
+                    message: 'View Your details'
+                };
             }
             catch (error) {
                 throw new common_1.BadRequestException(error);
@@ -156,14 +151,14 @@ let UserService = class UserService {
     }
     async getMatch(Token) {
         try {
-            const match = await this.userModel.findOne({ where: { id: Token.id } });
+            const match = await this.userRepository.findOne({ where: { id: Token.id } });
             return match;
         }
         catch (error) {
         }
     }
     async checkDuplicate(body) {
-        const match = await this.userModel.findOne({ where: { username: body.username } });
+        const match = await this.userRepository.findOne({ where: { username: body.username } });
         return match;
     }
     generateToken(id) {
@@ -172,8 +167,11 @@ let UserService = class UserService {
 };
 UserService = __decorate([
     common_1.Injectable(),
-    __param(0, common_1.Inject('USER_REPOSITORY')),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __param(0, typeorm_2.InjectRepository(user_entity_1.User)),
+    __param(1, typeorm_2.InjectRepository(user_entity_1.Sockets)),
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        typeorm_1.Repository,
+        web_socket_gateway_1.WebSocketsGateway])
 ], UserService);
 exports.UserService = UserService;
 //# sourceMappingURL=user.service.js.map

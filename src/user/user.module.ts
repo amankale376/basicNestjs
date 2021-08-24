@@ -3,12 +3,12 @@ import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 // import { User , UserSchema } from './user.model';
 import { UserService , } from './user.service';
-import { userProviders } from './user.providers'; 
-import { DatabaseModule } from '../database/database.module';
-import { UserGateway } from './user.gateway';
+import { WebSocketModule } from 'src/web-socket/web-socket.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Sockets, User } from './user.entity';
 @Module({
-  imports:[DatabaseModule],
+  imports:[TypeOrmModule.forFeature([User, Sockets]), WebSocketModule],
   controllers: [UserController],
-  providers: [...userProviders,UserService,UserGateway]
+  providers: [UserService]
 })
 export class UserModule {}

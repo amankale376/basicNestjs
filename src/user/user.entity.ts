@@ -18,13 +18,13 @@ export class User{
     @Column()
     password:string;
 
+}
+@Entity()
+export class Sockets{
+    @PrimaryGeneratedColumn("increment")
+    id:number;
     @Column()
-    employeeID:string;
-
+    userId:number;
     @Column()
-    status:string;
-
-    @Column()
-    viewers:string;
-
+    ClientId:string;
 }

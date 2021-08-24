@@ -14,7 +14,7 @@
         <h1>{{title}}</h1>
     <p>
         <ul>
-            <li v-for="msg of messages">{{msg}}</li>
+            <li>{{msg}}</li>
         </ul>
     </p>
     
@@ -31,8 +31,9 @@
             },
             created(){
                 this.socket = io("http://localhost:3000")
-                this.socket.emit('user', '<%= param %>')
+                this.socket.emit('user', {id:2})
                 this.socket.on('message',(msg)=>{
+                    console.log(msg)
                   this.messages = msg
                 })
             }

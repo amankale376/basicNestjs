@@ -1,10 +1,13 @@
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
 import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { User, Sockets } from './user.entity';
+import { WebSocketsGateway } from 'src/web-socket/web-socket.gateway';
 export declare class UserService {
-    private userModel;
-    constructor(userModel: Repository<User>);
+    private userRepository;
+    private socketsRepository;
+    private readonly webSocketGateway;
+    constructor(userRepository: Repository<User>, socketsRepository: Repository<Sockets>, webSocketGateway: WebSocketsGateway);
     login(body: LoginDto): Promise<{
         message: string;
         token: string;
@@ -15,7 +18,7 @@ export declare class UserService {
         message: string;
     }>;
     deleteUser(Token: any): Promise<{
-        id: string;
+        id: number;
         message: string;
     }>;
     listUsers(Token: any, query: any): Promise<User[]>;
@@ -23,10 +26,7 @@ export declare class UserService {
         user: User;
     }>;
     getUserById(Token: any, id: any): Promise<{
-        name: string;
-        email: string;
-        emmployeeID: string;
-        username: string;
+        message: string;
     }>;
     private getMatch;
     private checkDuplicate;

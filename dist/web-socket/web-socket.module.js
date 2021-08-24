@@ -6,21 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserModule = void 0;
+exports.WebSocketModule = void 0;
 const common_1 = require("@nestjs/common");
-const user_controller_1 = require("./user.controller");
-const user_service_1 = require("./user.service");
-const web_socket_module_1 = require("../web-socket/web-socket.module");
-const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("./user.entity");
-let UserModule = class UserModule {
+const web_socket_gateway_1 = require("./web-socket.gateway");
+let WebSocketModule = class WebSocketModule {
 };
-UserModule = __decorate([
+WebSocketModule = __decorate([
     common_1.Module({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, user_entity_1.Sockets]), web_socket_module_1.WebSocketModule],
-        controllers: [user_controller_1.UserController],
-        providers: [user_service_1.UserService]
+        imports: [],
+        providers: [web_socket_gateway_1.WebSocketsGateway],
+        exports: [web_socket_gateway_1.WebSocketsGateway]
     })
-], UserModule);
-exports.UserModule = UserModule;
-//# sourceMappingURL=user.module.js.map
+], WebSocketModule);
+exports.WebSocketModule = WebSocketModule;
+//# sourceMappingURL=web-socket.module.js.map

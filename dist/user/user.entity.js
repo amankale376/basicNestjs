@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.Sockets = exports.User = void 0;
 const typeorm_1 = require("typeorm");
 let User = class User {
 };
@@ -33,20 +33,26 @@ __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", String)
-], User.prototype, "employeeID", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", String)
-], User.prototype, "status", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", String)
-], User.prototype, "viewers", void 0);
 User = __decorate([
     typeorm_1.Entity()
 ], User);
 exports.User = User;
+let Sockets = class Sockets {
+};
+__decorate([
+    typeorm_1.PrimaryGeneratedColumn("increment"),
+    __metadata("design:type", Number)
+], Sockets.prototype, "id", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", Number)
+], Sockets.prototype, "userId", void 0);
+__decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", String)
+], Sockets.prototype, "ClientId", void 0);
+Sockets = __decorate([
+    typeorm_1.Entity()
+], Sockets);
+exports.Sockets = Sockets;
 //# sourceMappingURL=user.entity.js.map
