@@ -14,7 +14,7 @@ const auth_middleware_1 = require("./common/middleware/auth.middleware");
 const user_module_1 = require("./user/user.module");
 const path_1 = require("path");
 const web_socket_module_1 = require("./web-socket/web-socket.module");
-console.log(path_1.join(__dirname, '**', '*.entity{.ts,.js}'));
+const avatar_module_1 = require("./avatar/avatar.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.Auth)
@@ -33,7 +33,7 @@ AppModule = __decorate([
                 synchronize: true,
                 entities: [path_1.join(__dirname, '**', '*.entity{.ts,.js}')]
             }),
-            user_module_1.UserModule, web_socket_module_1.WebSocketModule],
+            user_module_1.UserModule, web_socket_module_1.WebSocketModule, avatar_module_1.AvatarModule],
         controllers: [],
         providers: [],
     })

@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 
  import { join } from 'path';
 import { WebSocketModule } from './web-socket/web-socket.module';
+import { AvatarModule } from './avatar/avatar.module';
 @Module({
   imports: [ TypeOrmModule.forRoot({  
   type:'mysql',
@@ -17,7 +18,7 @@ import { WebSocketModule } from './web-socket/web-socket.module';
   database:'nestjsusers',
   synchronize:true,
   entities: [  join(__dirname,'**','*.entity{.ts,.js}')]}),
-   UserModule, WebSocketModule],
+   UserModule, WebSocketModule, AvatarModule],
   controllers: [],
   providers: [],
 })
