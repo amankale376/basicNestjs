@@ -74,91 +74,71 @@ let UserService = class UserService {
     }
     async deleteUser(Token) {
         const match = await this.getMatch(Token);
-        if (match) {
-            try {
-                const deleteUser = await this.userRepository.delete({ id: Token.id });
-                if (deleteUser) {
-                    return {
-                        id: match.id,
-                        message: 'user with this id is deleted',
-                    };
-                }
-            }
-            catch (error) {
-                throw new common_1.BadRequestException(error);
+        try {
+            const deleteUser = await this.userRepository.delete({ id: Token.id });
+            if (deleteUser) {
+                return {
+                    message: 'user with ' + match.id + ' is deleted',
+                };
             }
         }
-        else {
-            throw new common_1.NotFoundException('user not found');
+        catch (error) {
+            throw new common_1.BadRequestException(error);
         }
     }
     async listUsers(Token, query) {
-        const match = await this.getMatch(Token);
-        if (match) {
-            const page = query.page || 1;
-            const limit = query.limit || 5;
-            const skip = (page - 1) * limit;
-            try {
-                const users = await this.userRepository.find({
-                    select: ['name', 'username', 'email'],
-                    order: { id: 'ASC' },
-                    skip: skip,
-                    take: limit,
-                });
-                if (users.length === 0) {
-                    throw new common_1.NotFoundException('user not found');
-                }
-                else {
-                    return users;
-                }
+        await this.getMatch(Token);
+        const page = query.page || 1;
+        const limit = query.limit || 5;
+        const skip = (page - 1) * limit;
+        try {
+            const users = await this.userRepository.find({
+                select: ['name', 'username', 'email'],
+                order: { id: 'ASC' },
+                skip: skip,
+                take: limit,
+            });
+            if (users.length === 0) {
+                throw new common_1.NotFoundException('user not found');
             }
-            catch (error) {
-                throw new common_1.BadRequestException(error);
+            else {
+                return users;
             }
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(error);
         }
     }
     async getUser(Token) {
-        const match = await this.getMatch(Token);
-        if (match) {
-            try {
-                const user = await this.userRepository.findOne({
-                    where: { id: Token.id },
-                    select: ['name', 'username', 'email'],
-                });
-                if (user) {
-                    return {
-                        user: user,
-                    };
-                }
-            }
-            catch (error) {
-                throw new common_1.BadRequestException(error);
+        await this.getMatch(Token);
+        try {
+            const user = await this.userRepository.findOne({
+                where: { id: Token.id },
+                select: ['name', 'username', 'email'],
+            });
+            if (user) {
+                return user;
             }
         }
-        else {
-            throw new common_1.UnauthorizedException('Authentication Failed');
+        catch (error) {
+            throw new common_1.BadRequestException(error);
         }
     }
     async getUserById(Token, id) {
         const match = await this.getMatch(Token);
-        if (match) {
-            try {
-                const user = await this.socketsRepository.findOne({
-                    where: { userId: id },
-                });
-                if (user.ClientId) {
-                    this.webSocketGateway.wss.emit('message', match.name + ' view your details');
-                }
-                return {
-                    message: 'View Your details',
-                };
+        try {
+            const user = await this.socketsRepository.findOne({
+                where: { userId: id },
+            });
+            if (user.ClientId) {
+                this.webSocketGateway.wss.emit('message', match.name + ' view your details');
             }
-            catch (error) {
-                throw new common_1.BadRequestException(error);
-            }
+            return {
+                message: 'You viewed details',
+            };
         }
-        else {
-            throw new common_1.UnauthorizedException('Authentication Failed');
+        catch (error) {
+            throw new common_1.BadRequestException(error);
         }
     }
     async getMatch(Token) {
@@ -166,7 +146,10 @@ let UserService = class UserService {
             const match = await this.userRepository.findOne({
                 where: { id: Token.id },
             });
-            return match;
+            if (match) {
+                return match;
+            }
+            throw new common_1.UnauthorizedException('Authentication Failed');
         }
         catch (error) { }
     }

@@ -7,11 +7,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-// import { InjectModel } from '@nestjs/mongoose';
-// import { Model } from 'mongoose';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
-// import { User, UserDocument } from './user.model';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { Repository } from 'typeorm';
@@ -19,9 +16,12 @@ import { User, Sockets } from './user.entity';
 import { WebSocketsGateway } from 'src/web-socket/web-socket.gateway';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryDto } from './dto/query.dto';
+import { LoginReturnDto } from './dto/returns/login-return.dto';
+import { SignupReturnDto } from './dto/returns/signup-return.dto';
+import { UserReturnDto } from './dto/returns/user.return.dto';
+import { MessageReturnDto } from './dto/returns/message-return.dto';
 @Injectable()
 export class UserService {
-  //    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -30,7 +30,7 @@ export class UserService {
     private readonly webSocketGateway: WebSocketsGateway,
   ) {}
 
-  async login(body: LoginDto) {
+  async login(body: LoginDto): Promise<LoginReturnDto> {
     try {
       const user = await this.userRepository.findOne({
         where: { username: body.username },
@@ -54,7 +54,7 @@ export class UserService {
     }
   }
 
-  async signup(body: SignupDto) {
+  async signup(body: SignupDto): Promise<SignupReturnDto> {
     try {
       const check = await this.checkDuplicate(body);
       if (check) {
@@ -77,91 +77,74 @@ export class UserService {
     }
   }
 
-  async deleteUser(Token) {
+  async deleteUser(Token): Promise<MessageReturnDto> {
     const match = await this.getMatch(Token);
-    if (match) {
-      try {
-        const deleteUser = await this.userRepository.delete({ id: Token.id });
-        if (deleteUser) {
-          return {
-            id: match.id,
-            message: 'user with this id is deleted',
-          };
-        }
-      } catch (error) {
-        throw new BadRequestException(error);
-      }
-    } else {
-      throw new NotFoundException('user not found');
-    }
-  }
-
-  async listUsers(Token: any, query: QueryDto) {
-    const match = await this.getMatch(Token);
-    if (match) {
-      const page = query.page || 1;
-      const limit = query.limit || 5;
-      const skip = (page - 1) * limit;
-      try {
-        const users = await this.userRepository.find({
-          select: ['name', 'username', 'email'],
-          order: { id: 'ASC' },
-          skip: skip,
-          take: limit,
-        });
-        if (users.length === 0) {
-          throw new NotFoundException('user not found');
-        } else {
-          return users;
-        }
-      } catch (error) {
-        throw new BadRequestException(error);
-      }
-    }
-  }
-
-  async getUser(Token: { id: any }) {
-    const match = await this.getMatch(Token);
-    if (match) {
-      try {
-        const user = await this.userRepository.findOne({
-          where: { id: Token.id },
-          select: ['name', 'username', 'email'],
-        });
-        if (user) {
-          return {
-            user: user,
-          };
-        }
-      } catch (error) {
-        throw new BadRequestException(error);
-      }
-    } else {
-      throw new UnauthorizedException('Authentication Failed');
-    }
-  }
-
-  async getUserById(Token: any, id: number) {
-    const match = await this.getMatch(Token);
-    if (match) {
-      try {
-        const user = await this.socketsRepository.findOne({
-          where: { userId: id },
-        });
-        if (user.ClientId) {
-          this.webSocketGateway.wss.emit(
-            'message',
-            match.name + ' view your details',
-          );
-        }
+    try {
+      const deleteUser = await this.userRepository.delete({ id: Token.id });
+      if (deleteUser) {
         return {
-          message: 'View Your details',
+          message: 'user with ' + match.id + ' is deleted',
         };
-      } catch (error) {
-        throw new BadRequestException(error);
       }
-    } else {
-      throw new UnauthorizedException('Authentication Failed');
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async listUsers(Token: any, query: QueryDto): Promise<UserReturnDto[]> {
+    await this.getMatch(Token);
+    const page = query.page || 1;
+    const limit = query.limit || 5;
+    const skip = (page - 1) * limit;
+    try {
+      const users = await this.userRepository.find({
+        select: ['name', 'username', 'email'],
+        order: { id: 'ASC' },
+        skip: skip,
+        take: limit,
+      });
+      if (users.length === 0) {
+        throw new NotFoundException('user not found');
+      } else {
+        return users;
+      }
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async getUser(Token: { id: any }): Promise<UserReturnDto> {
+    await this.getMatch(Token);
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id: Token.id },
+        select: ['name', 'username', 'email'],
+      });
+      if (user) {
+        return user;
+      }
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async getUserById(Token: any, id: number): Promise<MessageReturnDto> {
+    const match = await this.getMatch(Token);
+    try {
+      const user = await this.socketsRepository.findOne({
+        where: { userId: id },
+      });
+      if (user.ClientId) {
+        this.webSocketGateway.wss.emit(
+          'message',
+          match.name + ' view your details',
+        );
+      }
+      return {
+        message: 'You viewed details',
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 
@@ -170,7 +153,10 @@ export class UserService {
       const match = await this.userRepository.findOne({
         where: { id: Token.id },
       });
-      return match;
+      if (match) {
+        return match;
+      }
+      throw new UnauthorizedException('Authentication Failed');
     } catch (error) {}
   }
 
