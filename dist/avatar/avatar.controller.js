@@ -18,10 +18,10 @@ const platform_express_1 = require("@nestjs/platform-express");
 let AvatarController = class AvatarController {
     uploadFile(file) {
         const name = file.originalname;
-        var ext = name.split('.').pop();
+        const ext = name.split('.').pop();
         return {
             filename: file.name,
-            message: ext + " file is uploaded!"
+            message: ext + ' file is uploaded!',
         };
     }
 };

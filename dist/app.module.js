@@ -17,13 +17,15 @@ const web_socket_module_1 = require("./web-socket/web-socket.module");
 const avatar_module_1 = require("./avatar/avatar.module");
 let AppModule = class AppModule {
     configure(consumer) {
-        consumer.apply(auth_middleware_1.Auth)
+        consumer
+            .apply(auth_middleware_1.Auth)
             .forRoutes({ path: '/signup', method: common_1.RequestMethod.POST });
     }
 };
 AppModule = __decorate([
     common_1.Module({
-        imports: [typeorm_1.TypeOrmModule.forRoot({
+        imports: [
+            typeorm_1.TypeOrmModule.forRoot({
                 type: 'mysql',
                 host: 'localhost',
                 port: 3306,
@@ -31,9 +33,12 @@ AppModule = __decorate([
                 password: 'password',
                 database: 'nestjsusers',
                 synchronize: true,
-                entities: [path_1.join(__dirname, '**', '*.entity{.ts,.js}')]
+                entities: [path_1.join(__dirname, '**', '*.entity{.ts,.js}')],
             }),
-            user_module_1.UserModule, web_socket_module_1.WebSocketModule, avatar_module_1.AvatarModule],
+            user_module_1.UserModule,
+            web_socket_module_1.WebSocketModule,
+            avatar_module_1.AvatarModule,
+        ],
         controllers: [],
         providers: [],
     })

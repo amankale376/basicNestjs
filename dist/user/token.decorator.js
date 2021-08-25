@@ -9,7 +9,7 @@ exports.Token = common_1.createParamDecorator((data, ctx) => {
     const token = request.header('Authorization').replace('Bearer ', '');
     try {
         const decoded = jwt.verify(token, process.env.SECRET);
-        return request.token = decoded;
+        return (request.token = decoded);
     }
     catch (error) {
         throw new common_1.BadRequestException(error);

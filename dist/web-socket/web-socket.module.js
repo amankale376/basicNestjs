@@ -15,7 +15,7 @@ WebSocketModule = __decorate([
     common_1.Module({
         imports: [],
         providers: [web_socket_gateway_1.WebSocketsGateway],
-        exports: [web_socket_gateway_1.WebSocketsGateway]
+        exports: [web_socket_gateway_1.WebSocketsGateway],
     })
 ], WebSocketModule);
 exports.WebSocketModule = WebSocketModule;

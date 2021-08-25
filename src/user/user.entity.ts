@@ -1,30 +1,28 @@
-
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class User{
-    @PrimaryGeneratedColumn("increment")
-    id:number;
+export class User {
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
-    @Column()
-    name:string;
-    
-    @Column()
-    username:string;
+  @Column()
+  name: string;
 
-    @Column()
-    email:string;
+  @Column()
+  username: string;
 
-    @Column()
-    password:string;
+  @Column()
+  email: string;
 
+  @Column()
+  password: string;
 }
 @Entity()
-export class Sockets{
-    @PrimaryGeneratedColumn("increment")
-    id:number;
-    @Column()
-    userId:number;
-    @Column()
-    ClientId:string;
+export class Sockets {
+  @PrimaryGeneratedColumn('increment')
+  id: number;
+  @Column()
+  userId: number;
+  @Column()
+  ClientId: string;
 }

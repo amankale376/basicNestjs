@@ -14,7 +14,7 @@ const typeorm_1 = require("typeorm");
 let User = class User {
 };
 __decorate([
-    typeorm_1.PrimaryGeneratedColumn("increment"),
+    typeorm_1.PrimaryGeneratedColumn('increment'),
     __metadata("design:type", Number)
 ], User.prototype, "id", void 0);
 __decorate([
@@ -40,7 +40,7 @@ exports.User = User;
 let Sockets = class Sockets {
 };
 __decorate([
-    typeorm_1.PrimaryGeneratedColumn("increment"),
+    typeorm_1.PrimaryGeneratedColumn('increment'),
     __metadata("design:type", Number)
 ], Sockets.prototype, "id", void 0);
 __decorate([

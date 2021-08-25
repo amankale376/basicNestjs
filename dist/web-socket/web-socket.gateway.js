@@ -21,7 +21,7 @@ let WebSocketsGateway = class WebSocketsGateway {
     }
     async handleDisconnect(client) {
         try {
-            this.logger.log("Client Disconnected : " + client.id);
+            this.logger.log('Client Disconnected : ' + client.id);
             await typeorm_1.getRepository(user_entity_1.Sockets).delete({ ClientId: client.id });
         }
         catch (error) {
@@ -29,10 +29,13 @@ let WebSocketsGateway = class WebSocketsGateway {
         }
     }
     async handleConnection(client) {
-        this.logger.log("Client Connection " + client.id);
+        this.logger.log('Client Connection ' + client.id);
         this.SocketID = client.id;
         client.on('user', async (user) => {
-            await typeorm_1.getRepository(user_entity_1.Sockets).insert({ userId: user.id, ClientId: client.id });
+            await typeorm_1.getRepository(user_entity_1.Sockets).insert({
+                userId: user.id,
+                ClientId: client.id,
+            });
         });
     }
 };

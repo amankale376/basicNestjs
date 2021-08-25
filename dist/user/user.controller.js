@@ -110,7 +110,7 @@ __decorate([
     __param(0, token_decorator_1.Token()),
     __param(1, common_1.Param('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:paramtypes", [String, Number]),
     __metadata("design:returntype", Object)
 ], UserController.prototype, "getUserById", null);
 UserController = __decorate([

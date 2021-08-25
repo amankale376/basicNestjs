@@ -15,7 +15,8 @@ let AvatarModule = class AvatarModule {
 };
 AvatarModule = __decorate([
     common_1.Module({
-        imports: [platform_express_1.MulterModule.register({
+        imports: [
+            platform_express_1.MulterModule.register({
                 storage: multer_1.diskStorage({
                     destination: './uploads',
                     filename(req, file, cb) {
@@ -25,15 +26,15 @@ AvatarModule = __decorate([
                 fileFilter(req, file, cb) {
                     if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
                         const name = file.originalname;
-                        var ext = name.split('.').pop();
-                        return cb(new common_1.BadRequestException("file uploaded is of type " + ext), false);
+                        const ext = name.split('.').pop();
+                        return cb(new common_1.BadRequestException('file uploaded is of type ' + ext), false);
                     }
                     cb(undefined, true);
-                }
-            })
+                },
+            }),
         ],
         controllers: [avatar_controller_1.AvatarController],
-        providers: []
+        providers: [],
     })
 ], AvatarModule);
 exports.AvatarModule = AvatarModule;

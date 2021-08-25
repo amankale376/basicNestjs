@@ -29,7 +29,9 @@ let UserService = class UserService {
     }
     async login(body) {
         try {
-            const user = await this.userRepository.findOne({ where: { username: body.username } });
+            const user = await this.userRepository.findOne({
+                where: { username: body.username },
+            });
             if (!user) {
                 throw new common_1.NotFoundException('User not found!');
             }
@@ -41,7 +43,7 @@ let UserService = class UserService {
             await this.userRepository.save(user);
             return {
                 message: 'Login Success',
-                token: token
+                token: token,
             };
         }
         catch (error) {
@@ -52,7 +54,7 @@ let UserService = class UserService {
         try {
             const check = await this.checkDuplicate(body);
             if (check) {
-                throw new common_1.ForbiddenException("username is not Available");
+                throw new common_1.ForbiddenException('username is not Available');
             }
             const newuser = new user_entity_1.User();
             newuser.name = body.name;
@@ -63,7 +65,7 @@ let UserService = class UserService {
             return {
                 username: user.username,
                 email: user.email,
-                message: 'New user created!'
+                message: 'New user created!',
             };
         }
         catch (error) {
@@ -78,7 +80,7 @@ let UserService = class UserService {
                 if (deleteUser) {
                     return {
                         id: match.id,
-                        message: "user with this id is deleted"
+                        message: 'user with this id is deleted',
                     };
                 }
             }
@@ -87,7 +89,7 @@ let UserService = class UserService {
             }
         }
         else {
-            throw new common_1.NotFoundException("user not found");
+            throw new common_1.NotFoundException('user not found');
         }
     }
     async listUsers(Token, query) {
@@ -97,9 +99,14 @@ let UserService = class UserService {
             const limit = query.limit || 5;
             const skip = (page - 1) * limit;
             try {
-                const users = await this.userRepository.find({ select: ['name', 'username', 'email'], order: { id: 'ASC' }, skip: skip, take: limit });
+                const users = await this.userRepository.find({
+                    select: ['name', 'username', 'email'],
+                    order: { id: 'ASC' },
+                    skip: skip,
+                    take: limit,
+                });
                 if (users.length === 0) {
-                    throw new common_1.NotFoundException("user not found");
+                    throw new common_1.NotFoundException('user not found');
                 }
                 else {
                     return users;
@@ -114,10 +121,13 @@ let UserService = class UserService {
         const match = await this.getMatch(Token);
         if (match) {
             try {
-                const user = await this.userRepository.findOne({ where: { id: Token.id }, select: ['name', 'username', 'email'] });
+                const user = await this.userRepository.findOne({
+                    where: { id: Token.id },
+                    select: ['name', 'username', 'email'],
+                });
                 if (user) {
                     return {
-                        user: user
+                        user: user,
                     };
                 }
             }
@@ -126,19 +136,21 @@ let UserService = class UserService {
             }
         }
         else {
-            throw new common_1.UnauthorizedException("Authentication Failed");
+            throw new common_1.UnauthorizedException('Authentication Failed');
         }
     }
     async getUserById(Token, id) {
         const match = await this.getMatch(Token);
         if (match) {
             try {
-                const user = await this.socketsRepository.findOne({ where: { userId: id } });
+                const user = await this.socketsRepository.findOne({
+                    where: { userId: id },
+                });
                 if (user.ClientId) {
-                    this.webSocketGateway.wss.emit('message', match.name + " view your details");
+                    this.webSocketGateway.wss.emit('message', match.name + ' view your details');
                 }
                 return {
-                    message: 'View Your details'
+                    message: 'View Your details',
                 };
             }
             catch (error) {
@@ -146,23 +158,26 @@ let UserService = class UserService {
             }
         }
         else {
-            throw new common_1.UnauthorizedException("Authentication Failed");
+            throw new common_1.UnauthorizedException('Authentication Failed');
         }
     }
     async getMatch(Token) {
         try {
-            const match = await this.userRepository.findOne({ where: { id: Token.id } });
+            const match = await this.userRepository.findOne({
+                where: { id: Token.id },
+            });
             return match;
         }
-        catch (error) {
-        }
+        catch (error) { }
     }
     async checkDuplicate(body) {
-        const match = await this.userRepository.findOne({ where: { username: body.username } });
+        const match = await this.userRepository.findOne({
+            where: { username: body.username },
+        });
         return match;
     }
     generateToken(id) {
-        return jwt.sign({ id: id }, process.env.SECRET, { expiresIn: "1hr" });
+        return jwt.sign({ id: id }, process.env.SECRET, { expiresIn: '1hr' });
     }
 };
 UserService = __decorate([

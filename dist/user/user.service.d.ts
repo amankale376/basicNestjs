@@ -3,6 +3,7 @@ import { SignupDto } from './dto/signup.dto';
 import { Repository } from 'typeorm';
 import { User, Sockets } from './user.entity';
 import { WebSocketsGateway } from 'src/web-socket/web-socket.gateway';
+import { QueryDto } from './dto/query.dto';
 export declare class UserService {
     private userRepository;
     private socketsRepository;
@@ -21,11 +22,13 @@ export declare class UserService {
         id: number;
         message: string;
     }>;
-    listUsers(Token: any, query: any): Promise<User[]>;
-    getUser(Token: any): Promise<{
+    listUsers(Token: any, query: QueryDto): Promise<User[]>;
+    getUser(Token: {
+        id: any;
+    }): Promise<{
         user: User;
     }>;
-    getUserById(Token: any, id: any): Promise<{
+    getUserById(Token: any, id: number): Promise<{
         message: string;
     }>;
     private getMatch;
