@@ -20,6 +20,10 @@ import {
   ApiParam,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { LoginReturnDto } from './dto/returns/login-return.dto';
+import { SignupReturnDto } from './dto/returns/signup-return.dto';
+import { MessageReturnDto } from './dto/returns/message-return.dto';
+import { UserReturnDto } from './dto/returns/user.return.dto';
 @Controller('/')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -28,27 +32,27 @@ export class UserController {
   @ApiUnauthorizedResponse({ description: 'Invalid Credentials' })
   @ApiBody({ type: LoginDto })
   @Post('login')
-  login(@Body() user: LoginDto): any {
+  login(@Body() user: LoginDto): Promise<LoginReturnDto> {
     return this.userService.login(user);
   }
 
   @ApiBody({ type: SignupDto })
   @ApiCreatedResponse({ description: 'User registeration' })
   @Post('signup')
-  signup(@Body() user: SignupDto): any {
+  signup(@Body() user: SignupDto): Promise<SignupReturnDto> {
     return this.userService.signup(user);
   }
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'User deletion' })
   @Delete('deleteUser')
-  deleteUser(@Token() token): any {
+  deleteUser(@Token() token): Promise<MessageReturnDto> {
     return this.userService.deleteUser(token);
   }
   @Post('users')
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'Listing Users' })
   @ApiBody({ type: QueryDto })
-  listUsers(@Token() token, @Body() query: QueryDto): any {
+  listUsers(@Token() token, @Body() query: QueryDto): Promise<UserReturnDto[]> {
     return this.userService.listUsers(token, query);
   }
 
@@ -61,7 +65,7 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'User information' })
   @Get('user')
-  getUser(@Token() token: any): any {
+  getUser(@Token() token: any): Promise<UserReturnDto> {
     return this.userService.getUser(token);
   }
 
@@ -69,7 +73,10 @@ export class UserController {
   @ApiOkResponse({ description: 'get Particular User by Id ' })
   @Get('user/:id')
   @ApiParam({ name: 'id', type: 'number' })
-  getUserById(@Token() Token: string, @Param('id') id: number): any {
+  getUserById(
+    @Token() Token: string,
+    @Param('id') id: number,
+  ): Promise<MessageReturnDto> {
     return this.userService.getUserById(Token, id);
   }
 }

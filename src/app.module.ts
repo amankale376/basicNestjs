@@ -8,9 +8,7 @@ import {
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Auth } from './common/middleware/auth.middleware';
-
 import { UserModule } from './user/user.module';
-
 import { join } from 'path';
 import { WebSocketModule } from './web-socket/web-socket.module';
 import { AvatarModule } from './avatar/avatar.module';

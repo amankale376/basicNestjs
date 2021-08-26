@@ -1,9 +1,7 @@
-import { Inject, Logger, UnauthorizedException } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
@@ -21,7 +19,7 @@ export class WebSocketsGateway
 
   private logger: Logger = new Logger('AppGateway');
 
-  async handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket): Promise<void> {
     try {
       this.logger.log('Client Disconnected : ' + client.id);
       await getRepository(Sockets).delete({ ClientId: client.id });
@@ -30,7 +28,7 @@ export class WebSocketsGateway
     }
   }
 
-  async handleConnection(client: Socket) {
+  async handleConnection(client: Socket): Promise<void> {
     this.logger.log('Client Connection ' + client.id);
     this.SocketID = client.id;
     client.on('user', async (user) => {
