@@ -13,7 +13,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { Repository } from 'typeorm';
 import { User, Sockets } from './user.entity';
-import { WebSocketsGateway } from 'src/web-socket/web-socket.gateway';
+import { WebSocketsGateway } from '../web-socket/web-socket.gateway';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryDto } from './dto/query.dto';
 import { LoginReturnDto } from './dto/returns/login-return.dto';
@@ -78,12 +78,12 @@ export class UserService {
   }
 
   async deleteUser(Token): Promise<MessageReturnDto> {
-    const match = await this.getMatch(Token);
+    await this.getMatch(Token);
     try {
       const deleteUser = await this.userRepository.delete({ id: Token.id });
       if (deleteUser) {
         return {
-          message: 'user with ' + match.id + ' is deleted',
+          message: 'user is deleted',
         };
       }
     } catch (error) {
@@ -113,7 +113,7 @@ export class UserService {
     }
   }
 
-  async getUser(Token: { id: any }): Promise<UserReturnDto> {
+  async getUser(Token): Promise<UserReturnDto> {
     await this.getMatch(Token);
     try {
       const user = await this.userRepository.findOne({
@@ -148,7 +148,7 @@ export class UserService {
     }
   }
 
-  private async getMatch(Token: { id: any }) {
+  private async getMatch(Token) {
     try {
       const match = await this.userRepository.findOne({
         where: { id: Token.id },

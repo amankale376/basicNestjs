@@ -12,6 +12,7 @@ import { UserModule } from './user/user.module';
 import { join } from 'path';
 import { WebSocketModule } from './web-socket/web-socket.module';
 import { AvatarModule } from './avatar/avatar.module';
+import { DatabaseModule } from './database/database.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -27,6 +28,7 @@ import { AvatarModule } from './avatar/avatar.module';
     UserModule,
     WebSocketModule,
     AvatarModule,
+    DatabaseModule,
   ],
   controllers: [],
   providers: [],

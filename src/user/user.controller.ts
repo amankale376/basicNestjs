@@ -74,7 +74,7 @@ export class UserController {
   @Get('user/:id')
   @ApiParam({ name: 'id', type: 'number' })
   getUserById(
-    @Token() Token: string,
+    @Token() Token,
     @Param('id') id: number,
   ): Promise<MessageReturnDto> {
     return this.userService.getUserById(Token, id);
